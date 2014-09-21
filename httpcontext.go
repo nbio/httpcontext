@@ -1,51 +1,63 @@
 package httpcontext
 
 import (
-	"errors"
 	"io"
 	"net/http"
 )
+
+// Set sets a context value on req.
+// It currently accomplishes this by replacing the http.Request’s Body with
+// a ContextReadCloser, which wraps the original io.ReadCloser.
+// See “Invasion of the Body Snatchers.”
+func Set(req *http.Request, key interface{}, value interface{}) {
+	crc := getContextReadCloser(req)
+	crc.Context()[key] = value
+}
+
+// Get gets a context value from req.
+// Returns nil if key is not present in the request context.
+func Get(req *http.Request, key interface{}) interface{} {
+	crc := getContextReadCloser(req)
+	if value, ok := crc.Context()[key]; ok {
+		return value
+	}
+	return nil
+}
+
+// GetOk gets a context value from req.
+// Returns (nil, false) if key is not present in the request context.
+func GetOk(req *http.Request, key interface{}) (interface{}, bool) {
+	crc := getContextReadCloser(req)
+	if value, ok := crc.Context()[key]; ok {
+		return value, ok
+	}
+	return nil, false
+}
 
 // ContextReadCloser implements the io.ReadCloser interface
 // with two additional methods: Context() and SetContext().
 type ContextReadCloser interface {
 	io.ReadCloser
-	Context() interface{}
-	SetContext(interface{})
+	Context() map[interface{}]interface{}
 }
 
 type contextReadCloser struct {
 	io.ReadCloser
-	context interface{}
+	context map[interface{}]interface{}
 }
 
-func (crc *contextReadCloser) Context() interface{} {
+func (crc *contextReadCloser) Context() map[interface{}]interface{} {
 	return crc.context
 }
 
-func (crc *contextReadCloser) SetContext(context interface{}) {
-	crc.context = context
-}
-
-// Set sets a context value on req.
-// It accomplishes this by replacing the http.Request.Body with
-// a ContextReadCloser. See Invasion of the Body Snatchers.
-func Set(req *http.Request, context interface{}) {
+func getContextReadCloser(req *http.Request) ContextReadCloser {
 	crc, ok := req.Body.(ContextReadCloser)
 	if !ok {
-		crc = &contextReadCloser{ReadCloser: req.Body}
+		crc = &contextReadCloser{
+			ReadCloser: req.Body,
+			context:    make(map[interface{}]interface{}),
+		}
 		req.Body = crc
 	}
-	crc.SetContext(context)
-}
-
-// Set gets a context value from req.
-// Set will return an error if req.Body was not previously
-// replaced with a ContextReadCloser.
-func Get(req *http.Request) (interface{}, error) {
-	crc, ok := req.Body.(ContextReadCloser)
-	if !ok {
-		return nil, errors.New("Unable to convert http.Request.Body to ContextReadCloser")
-	}
-	return crc.Context(), nil
+	return crc
 }
