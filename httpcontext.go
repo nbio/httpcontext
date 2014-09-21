@@ -15,7 +15,7 @@ func Set(req *http.Request, key interface{}, value interface{}) {
 }
 
 // Get gets a context value from req.
-// Returns nil if key is not present in the request context.
+// Returns nil if key not found in the request context.
 func Get(req *http.Request, key interface{}) interface{} {
 	crc := getContextReadCloser(req)
 	if value, ok := crc.Context()[key]; ok {
@@ -25,7 +25,7 @@ func Get(req *http.Request, key interface{}) interface{} {
 }
 
 // GetOk gets a context value from req.
-// Returns (nil, false) if key is not present in the request context.
+// Returns (nil, false) if key not found in the request context.
 func GetOk(req *http.Request, key interface{}) (interface{}, bool) {
 	crc := getContextReadCloser(req)
 	if value, ok := crc.Context()[key]; ok {
