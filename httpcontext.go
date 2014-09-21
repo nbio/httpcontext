@@ -34,6 +34,14 @@ func GetOk(req *http.Request, key interface{}) (interface{}, bool) {
 	return nil, false
 }
 
+// GetAll returns all stored context values for a request.
+// Will always return a valid map. Returns an empty map for
+// requests context data previously set.
+func GetAll(req *http.Request) map[interface{}]interface{} {
+	crc := getContextReadCloser(req)
+	return crc.Context()
+}
+
 // ContextReadCloser implements the io.ReadCloser interface
 // with two additional methods: Context() and SetContext().
 type ContextReadCloser interface {
