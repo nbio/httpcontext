@@ -34,6 +34,19 @@ func GetOk(req *http.Request, key interface{}) (interface{}, bool) {
 	return nil, false
 }
 
+// GetString gets a string context value from req.
+// Returns an empty string if key not found in the request context,
+// or the value does not evaluate to a string.
+func GetString(req *http.Request, key interface{}) string {
+	crc := getContextReadCloser(req)
+	if value, ok := crc.Context()[key]; ok {
+		if typed, ok := value.(string); ok {
+			return typed
+		}
+	}
+	return ""
+}
+
 // GetAll returns all stored context values for a request.
 // Will always return a valid map. Returns an empty map for
 // requests context data previously set.

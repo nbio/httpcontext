@@ -47,10 +47,18 @@ func TestContext(t *testing.T) {
 	value, ok = GetOk(req, "nil value")
 	st.Expect(t, value, nil)
 	st.Expect(t, ok, true)
+	
+	// GetString()
+	Set(req, "int value", 13)
+	Set(req, "string value", "hello")
+	str := GetString(req, "int value")
+	st.Expect(t, str, "")
+	str = GetString(req, "string value")
+	st.Expect(t, str, "hello")
 
 	// GetAll()
 	values := GetAll(req)
-	st.Expect(t, len(values), 3)
+	st.Expect(t, len(values), 5)
 
 	// GetAll() for empty request
 	values = GetAll(empty)
@@ -59,11 +67,11 @@ func TestContext(t *testing.T) {
 	// Delete()
 	Delete(req, key1)
 	st.Expect(t, Get(req, key1), nil)
-	st.Expect(t, len(crc.Context()), 2)
+	st.Expect(t, len(crc.Context()), 4)
 
 	Delete(req, key2)
 	st.Expect(t, Get(req, key2), nil)
-	st.Expect(t, len(crc.Context()), 1)
+	st.Expect(t, len(crc.Context()), 3)
 
 	// Clear()
 	Clear(req)
