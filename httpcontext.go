@@ -70,8 +70,8 @@ func Clear(req *http.Request) {
 	}
 }
 
-// ContextReadCloser implements the io.ReadCloser interface
-// with two additional methods: Context() and SetContext().
+// ContextReadCloser augments the io.ReadCloser interface
+// with a Context() method.
 type ContextReadCloser interface {
 	io.ReadCloser
 	Context() map[interface{}]interface{}
