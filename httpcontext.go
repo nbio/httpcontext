@@ -43,7 +43,7 @@ func GetAll(req *http.Request) map[interface{}]interface{} {
 }
 
 // Delete deletes a stored value from a request’s context.
-func Delete(req *http.Request, key string) {
+func Delete(req *http.Request, key interface{}) {
 	crc := getContextReadCloser(req)
 	delete(crc.Context(), key)
 }
