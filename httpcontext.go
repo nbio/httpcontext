@@ -18,20 +18,15 @@ func Set(req *http.Request, key interface{}, value interface{}) {
 // Returns nil if key not found in the request context.
 func Get(req *http.Request, key interface{}) interface{} {
 	crc := getContextReadCloser(req)
-	if value, ok := crc.Context()[key]; ok {
-		return value
-	}
-	return nil
+	return crc.Context()[key]
 }
 
 // GetOk gets a context value from req.
 // Returns (nil, false) if key not found in the request context.
-func GetOk(req *http.Request, key interface{}) (interface{}, bool) {
+func GetOk(req *http.Request, key interface{}) (val interface{}, ok bool) {
 	crc := getContextReadCloser(req)
-	if value, ok := crc.Context()[key]; ok {
-		return value, ok
-	}
-	return nil, false
+	val, ok = crc.Context()[key]
+	return
 }
 
 // GetString gets a string context value from req.
@@ -65,7 +60,7 @@ func Delete(req *http.Request, key interface{}) {
 func Clear(req *http.Request) {
 	crc := getContextReadCloser(req)
 	ctx := crc.Context()
-	for key, _ := range ctx {
+	for key := range ctx {
 		delete(ctx, key)
 	}
 }
