@@ -7,6 +7,7 @@ package httpcontext
 import (
 	"net/http"
 	"testing"
+
 	"github.com/nbio/st"
 )
 
@@ -47,7 +48,7 @@ func TestContext(t *testing.T) {
 	value, ok = GetOk(req, "nil value")
 	st.Expect(t, value, nil)
 	st.Expect(t, ok, true)
-	
+
 	// GetString()
 	Set(req, "int value", 13)
 	Set(req, "string value", "hello")
@@ -74,6 +75,10 @@ func TestContext(t *testing.T) {
 	st.Expect(t, len(crc.Context()), 3)
 
 	// Clear()
+	Set(req, key1, true)
+	values = GetAll(req)
 	Clear(req)
 	st.Expect(t, len(crc.Context()), 0)
+	val, _ := values[key1].(bool)
+	st.Expect(t, val, true) // Clear shouldn't delete values grabbed before
 }

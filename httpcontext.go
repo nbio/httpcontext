@@ -58,11 +58,8 @@ func Delete(req *http.Request, key interface{}) {
 
 // Clear clears all stored values from a request’s context.
 func Clear(req *http.Request) {
-	crc := getContextReadCloser(req)
-	ctx := crc.Context()
-	for key := range ctx {
-		delete(ctx, key)
-	}
+	crc := getContextReadCloser(req).(*contextReadCloser)
+	crc.context = map[interface{}]interface{}{}
 }
 
 // ContextReadCloser augments the io.ReadCloser interface
