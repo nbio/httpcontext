@@ -79,6 +79,6 @@ func TestContext(t *testing.T) {
 	values = GetAll(req)
 	Clear(req)
 	st.Expect(t, len(crc.Context()), 0)
-	val, _ := values[key1].(bool)
-	st.Expect(t, val, true) // Clear shouldn't delete values grabbed before
+	val, _ := values["int value"].(int)
+	st.Expect(t, val, 13) // Clear shouldn't delete values grabbed before
 }
